@@ -13,7 +13,6 @@ import java.util.UUID
 
 class Manager(private val plugin: JavaPlugin, private val config: Configuration) {
 
-    // Track players banned specifically from heart loss
     private val heartLossBannedPlayers = mutableSetOf<String>()
 
     fun addHeart(player: Player) {
@@ -68,24 +67,16 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
         val oneMonthMillis = 30L * 24 * 60 * 60 * 1000
         val expires = Date(System.currentTimeMillis() + oneMonthMillis)
         
-        // Track that this player was banned due to heart loss
         heartLossBannedPlayers.add(player.name)
         
         player.ban("You have been banned for losing all your hearts.", expires, null, true)
     }
 
-    /**
-     * Get list of players banned specifically from heart loss
-     */
     fun getBannedPlayersFromHeartLoss(): List<String> {
         return heartLossBannedPlayers.toList()
     }
 
-    /**
-     * Revive a player who was banned from heart loss (requires active beacon)
-     */
     fun revivePlayer(reviverPlayer: Player, playerName: String): Boolean {
-        // Check if player has an active revival beacon
         val canRevive = reviverPlayer.persistentDataContainer.has(
             org.bukkit.NamespacedKey(plugin, "can_revive"),
             org.bukkit.persistence.PersistentDataType.BYTE
@@ -103,15 +94,13 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
         try {
             val offlinePlayer = Bukkit.getOfflinePlayer(playerName)
             if (offlinePlayer.isBanned) {
-                offlinePlayer.ban = null // Unban the player
+                offlinePlayer.ban = null
                 
-                // If player is online, restore their health
                 val onlinePlayer = Bukkit.getPlayer(playerName)
                 onlinePlayer?.getAttribute(Attribute.MAX_HEALTH)?.baseValue = 20.0
                 
                 heartLossBannedPlayers.remove(playerName)
                 
-                // Consume the revival beacon structure
                 consumeRevivalBeacon(reviverPlayer)
                 
                 return true
@@ -125,7 +114,6 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
     
     private fun consumeRevivalBeacon(player: Player) {
         try {
-            // Get stored beacon location
             val x = player.persistentDataContainer.get(
                 org.bukkit.NamespacedKey(plugin, "beacon_x"),
                 org.bukkit.persistence.PersistentDataType.INTEGER
@@ -143,13 +131,10 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
             
             val location = player.world.getBlockAt(x, y, z).location
             
-            // Remove the beacon and surrounding blocks
             val beaconBlock = location.world?.getBlockAt(location)
             if (beaconBlock != null) {
-                // Remove the beacon
                 beaconBlock.type = Material.AIR
                 
-                // Remove diamond blocks
                 val diamondPositions = listOf(
                     location.clone().add(1.0, 0.0, 0.0),
                     location.clone().add(-1.0, 0.0, 0.0),
@@ -157,7 +142,6 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
                     location.clone().add(0.0, 0.0, -1.0)
                 )
                 
-                // Remove netherite blocks
                 val netheritePositions = listOf(
                     location.clone().add(1.0, 0.0, 1.0),
                     location.clone().add(-1.0, 0.0, 1.0),
@@ -174,7 +158,6 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
                 }
             }
             
-            // Clear revival data from player
             player.persistentDataContainer.remove(org.bukkit.NamespacedKey(plugin, "can_revive"))
             player.persistentDataContainer.remove(org.bukkit.NamespacedKey(plugin, "beacon_x"))
             player.persistentDataContainer.remove(org.bukkit.NamespacedKey(plugin, "beacon_y"))

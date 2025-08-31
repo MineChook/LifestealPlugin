@@ -55,10 +55,6 @@ class Lifesteal : KSpigot() {
                 sender.sendMessage("Only players can use this command.")
                 return true
             }
-            if (!sender.hasPermission("lifesteal.revive")) {
-                sender.sendMessage("§cYou don't have permission to revive players!")
-                return true
-            }
             if (args == null || args.isEmpty()) {
                 sender.sendMessage("§eUsage: /revive <playername>")
                 return true

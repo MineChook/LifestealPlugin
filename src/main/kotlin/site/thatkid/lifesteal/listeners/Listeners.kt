@@ -37,7 +37,6 @@ class Listeners(private val plugin: JavaPlugin, private val manager: Manager) {
         val item = it.item
         val clickedBlock = it.clickedBlock
 
-        // Handle heart item usage
         if (item != null && item.type == Material.RED_DYE) {
             val meta = item.itemMeta ?: return@listen
             val container = meta.persistentDataContainer
@@ -51,7 +50,6 @@ class Listeners(private val plugin: JavaPlugin, private val manager: Manager) {
             }
         }
 
-        // Handle revival beacon interaction
         if (clickedBlock != null && clickedBlock.type == Material.BEACON) {
             if (revivalBeacon.isValidRevivalStructure(clickedBlock)) {
                 revivalBeacon.activateRevivalBeacon(player, clickedBlock)
