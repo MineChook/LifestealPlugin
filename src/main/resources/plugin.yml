@@ -1,0 +1,6 @@
+name: Lifesteal
+version: '1.0-SNAPSHOT'
+main: site.thatkid.lifesteal.Lifesteal
+api-version: '1.21'
+authors: [ ThatKid ]
+website: thatkid.github.io
