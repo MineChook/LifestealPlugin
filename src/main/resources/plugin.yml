@@ -2,5 +2,18 @@ name: Lifesteal
 version: '1.0-SNAPSHOT'
 main: site.thatkid.lifesteal.Lifesteal
 api-version: '1.21'
+
+permission:
+  lifesteal:
+    description: Allows you to use lifesteal commands
+    default: op
+
+commands:
+    lifesteal:
+        description: Main lifesteal command
+        permission: lifesteal
+    drain:
+      description: Drain a heart
+
 authors: [ ThatKid ]
 website: thatkid.github.io
