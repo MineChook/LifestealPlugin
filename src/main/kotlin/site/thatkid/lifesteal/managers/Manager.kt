@@ -78,16 +78,6 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
     }
 
     fun revivePlayer(reviverPlayer: Player, playerName: String): Boolean {
-        val canRevive = reviverPlayer.persistentDataContainer.has(
-            org.bukkit.NamespacedKey(plugin, "can_revive"),
-            org.bukkit.persistence.PersistentDataType.BYTE
-        )
-        
-        if (!canRevive) {
-            reviverPlayer.sendMessage("§cYou need to activate a revival beacon first!")
-            return false
-        }
-        
         if (!heartLossBannedPlayers.contains(playerName)) {
             return false
         }
@@ -102,8 +92,6 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
 
                 heartLossBannedPlayers.remove(playerName)
                 
-                consumeRevivalBeacon(reviverPlayer)
-                
                 return true
             }
         } catch (e: Exception) {
@@ -111,62 +99,6 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
         }
 
         return false
-    }
-    
-    private fun consumeRevivalBeacon(player: Player) {
-        try {
-            val x = player.persistentDataContainer.get(
-                org.bukkit.NamespacedKey(plugin, "beacon_x"),
-                org.bukkit.persistence.PersistentDataType.INTEGER
-            ) ?: return
-            
-            val y = player.persistentDataContainer.get(
-                org.bukkit.NamespacedKey(plugin, "beacon_y"),
-                org.bukkit.persistence.PersistentDataType.INTEGER
-            ) ?: return
-            
-            val z = player.persistentDataContainer.get(
-                org.bukkit.NamespacedKey(plugin, "beacon_z"),
-                org.bukkit.persistence.PersistentDataType.INTEGER
-            ) ?: return
-            
-            val location = player.world.getBlockAt(x, y, z).location
-            
-            val beaconBlock = location.world?.getBlockAt(location)
-            if (beaconBlock != null) {
-                beaconBlock.type = Material.AIR
-                
-                val diamondPositions = listOf(
-                    location.clone().add(1.0, 0.0, 0.0),
-                    location.clone().add(-1.0, 0.0, 0.0),
-                    location.clone().add(0.0, 0.0, 1.0),
-                    location.clone().add(0.0, 0.0, -1.0)
-                )
-                
-                val netheritePositions = listOf(
-                    location.clone().add(1.0, 0.0, 1.0),
-                    location.clone().add(-1.0, 0.0, 1.0),
-                    location.clone().add(1.0, 0.0, -1.0),
-                    location.clone().add(-1.0, 0.0, -1.0)
-                )
-                
-                for (pos in diamondPositions) {
-                    pos.world?.getBlockAt(pos)?.type = Material.AIR
-                }
-                
-                for (pos in netheritePositions) {
-                    pos.world?.getBlockAt(pos)?.type = Material.AIR
-                }
-            }
-            
-            player.persistentDataContainer.remove(org.bukkit.NamespacedKey(plugin, "can_revive"))
-            player.persistentDataContainer.remove(org.bukkit.NamespacedKey(plugin, "beacon_x"))
-            player.persistentDataContainer.remove(org.bukkit.NamespacedKey(plugin, "beacon_y"))
-            player.persistentDataContainer.remove(org.bukkit.NamespacedKey(plugin, "beacon_z"))
-            
-        } catch (e: Exception) {
-            plugin.logger.warning("Failed to consume revival beacon: ${e.message}")
-        }
     }
 
 }

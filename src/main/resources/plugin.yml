@@ -14,8 +14,6 @@ commands:
         permission: lifesteal
     drain:
       description: Drain a heart
-    revive:
-      description: Revive a player banned from heart loss
 
 authors: [ ThatKid ]
 website: thatkid.github.io
