@@ -1,5 +1,6 @@
 package site.thatkid.lifesteal.managers
 
+import org.bukkit.BanList
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
@@ -94,11 +95,11 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
         try {
             val offlinePlayer = Bukkit.getOfflinePlayer(playerName)
             if (offlinePlayer.isBanned) {
-                offlinePlayer.ban = null
-                
+                plugin.server.dispatchCommand(plugin.server.consoleSender, "pardon $playerName")
+
                 val onlinePlayer = Bukkit.getPlayer(playerName)
-                onlinePlayer?.getAttribute(Attribute.MAX_HEALTH)?.baseValue = 20.0
-                
+                onlinePlayer?.getAttribute(Attribute.MAX_HEALTH)?.baseValue = 6.0
+
                 heartLossBannedPlayers.remove(playerName)
                 
                 consumeRevivalBeacon(reviverPlayer)
