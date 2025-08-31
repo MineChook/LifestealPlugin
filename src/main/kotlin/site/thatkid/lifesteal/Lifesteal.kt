@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
 import site.thatkid.lifesteal.listeners.Listeners
 import site.thatkid.lifesteal.managers.Manager
+import site.thatkid.lifesteal.recipes.CraftingRecipes
 
 class Lifesteal : KSpigot() {
 
@@ -14,12 +15,17 @@ class Lifesteal : KSpigot() {
 
     lateinit var manager : Manager
     lateinit var listeners: Listeners
+    lateinit var craftingRecipes: CraftingRecipes
 
     override fun startup() {
         pluginConfig = this.getConfig()
         manager = Manager(this, pluginConfig)
         listeners = Listeners(this, manager)
+        craftingRecipes = CraftingRecipes(this)
+        
         listeners.enableAll()
+        craftingRecipes.registerHeartRecipe()
+        
         pluginConfig.addDefault("maxHealth", 40.0)
     }
 
@@ -44,19 +50,47 @@ class Lifesteal : KSpigot() {
             }
             manager.drainHeart(sender)
         }
+        if (command.name == "revive") {
+            if (sender !is Player) {
+                sender.sendMessage("Only players can use this command.")
+                return true
+            }
+            if (!sender.hasPermission("lifesteal.revive")) {
+                sender.sendMessage("§cYou don't have permission to revive players!")
+                return true
+            }
+            if (args == null || args.isEmpty()) {
+                sender.sendMessage("§eUsage: /revive <playername>")
+                return true
+            }
+            val targetName = args[0] ?: return true
+            val success = manager.revivePlayer(sender, targetName)
+            if (success) {
+                sender.sendMessage("§aSuccessfully revived player $targetName!")
+                sender.sendMessage("§eThe revival beacon has been consumed.")
+            } else {
+                sender.sendMessage("§cFailed to revive player $targetName. They may not be banned from heart loss, or you need to activate a revival beacon first.")
+            }
+            return true
+        }
         return false
     }
 
     private fun reload() {
         listeners.disableAll()
+        craftingRecipes.unregisterRecipes()
 
         pluginConfig = this.getConfig()
         manager = Manager(this, pluginConfig)
         listeners = Listeners(this, manager)
+        craftingRecipes = CraftingRecipes(this)
+        
         listeners.enableAll()
+        craftingRecipes.registerHeartRecipe()
     }
 
     override fun shutdown() {
         listeners.disableAll()
+        craftingRecipes.unregisterRecipes()
     }
 }

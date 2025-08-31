@@ -7,6 +7,9 @@ permission:
   lifesteal:
     description: Allows you to use lifesteal commands
     default: op
+  lifesteal.revive:
+    description: Allows you to revive banned players
+    default: op
 
 commands:
     lifesteal:
@@ -14,6 +17,9 @@ commands:
         permission: lifesteal
     drain:
       description: Drain a heart
+    revive:
+      description: Revive a player banned from heart loss
+      permission: lifesteal.revive
 
 authors: [ ThatKid ]
 website: thatkid.github.io

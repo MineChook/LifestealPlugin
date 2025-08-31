@@ -12,8 +12,11 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
 import site.thatkid.lifesteal.items.Heart
 import site.thatkid.lifesteal.managers.Manager
+import site.thatkid.lifesteal.structures.RevivalBeacon
 
 class Listeners(private val plugin: JavaPlugin, private val manager: Manager) {
+
+    private val revivalBeacon = RevivalBeacon(plugin, manager)
 
     val deathListener = listen<PlayerDeathEvent> {
         val player = it.entity
@@ -31,19 +34,32 @@ class Listeners(private val plugin: JavaPlugin, private val manager: Manager) {
 
         if (it.action != Action.RIGHT_CLICK_AIR && it.action != Action.RIGHT_CLICK_BLOCK) return@listen
 
-        val item = it.item ?: return@listen
-        if (item.type != Material.RED_DYE) return@listen
+        val item = it.item
+        val clickedBlock = it.clickedBlock
 
-        val meta = item.itemMeta ?: return@listen
-        val container = meta.persistentDataContainer
+        // Handle heart item usage
+        if (item != null && item.type == Material.RED_DYE) {
+            val meta = item.itemMeta ?: return@listen
+            val container = meta.persistentDataContainer
 
-        val key = NamespacedKey(plugin, "heart")
+            val key = NamespacedKey(plugin, "heart")
 
-        if (container.has(key, PersistentDataType.BYTE)) {
-            manager.addHeart(player)
-            player.inventory.remove(item)
-            return@listen
+            if (container.has(key, PersistentDataType.BYTE)) {
+                manager.addHeart(player)
+                player.inventory.remove(item)
+                return@listen
+            }
         }
+
+        // Handle revival beacon interaction
+        if (clickedBlock != null && clickedBlock.type == Material.BEACON) {
+            if (revivalBeacon.isValidRevivalStructure(clickedBlock)) {
+                revivalBeacon.activateRevivalBeacon(player, clickedBlock)
+                it.isCancelled = true
+                return@listen
+            }
+        }
+        
         return@listen
     }
 
