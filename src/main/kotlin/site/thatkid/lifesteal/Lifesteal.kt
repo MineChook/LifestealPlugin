@@ -9,7 +9,6 @@ import site.thatkid.lifesteal.gui.Items
 import site.thatkid.lifesteal.listeners.Listeners
 import site.thatkid.lifesteal.managers.Manager
 import site.thatkid.lifesteal.recipes.CraftingRecipes
-import java.io.File
 
 class Lifesteal : KSpigot() {
 
@@ -42,7 +41,7 @@ class Lifesteal : KSpigot() {
         if (command.name == "lifesteal") {
             if (sender.hasPermission("lifesteal")) {
                 if (args.isEmpty()) {
-                    sender.sendMessage("Lifesteal v1.0 by thatkid.site")
+                    sender.sendMessage("Lifesteal v1.0 by ThatKid")
                     return true
                 }
                 if (args[0] == "reload") {

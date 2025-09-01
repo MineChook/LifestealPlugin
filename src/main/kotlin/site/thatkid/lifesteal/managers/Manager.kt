@@ -1,13 +1,17 @@
 package site.thatkid.lifesteal.managers
 
 import com.google.gson.GsonBuilder
+import io.papermc.paper.ban.BanListType
+import net.axay.kspigot.ipaddress.ipAddressData
+import org.bukkit.BanList
 import org.bukkit.Bukkit
 import org.bukkit.attribute.Attribute
 import org.bukkit.configuration.Configuration
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import site.thatkid.lifesteal.items.Heart
-import java.util.Date
+import java.util.*
+
 
 class Manager(private val plugin: JavaPlugin, private val config: Configuration) {
 
@@ -72,6 +76,13 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
         
         heartLossBannedPlayers.add(player.name)
 
+        val expiration = Date(System.currentTimeMillis() + 30L * 24 * 60 * 60 * 1000) // 30 days ban
+
+        // Ban the player by name with a reason and the expiration date.
+        plugin.server.getBanList(BanListType.PROFILE).addBan(player.playerProfile, "You have been banned for running out of hearts!", expiration, "Lifesteal Plugin")
+
+        // Ban the players ip
+        plugin.server.getBanList(BanListType.IP).addBan(player.address.address, "You have been banned for running out of hearts!", expiration, "Lifesteal Plugin")
 
         player.kick()
     }
