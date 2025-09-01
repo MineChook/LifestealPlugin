@@ -30,10 +30,19 @@ class CraftingRecipes(private val plugin: JavaPlugin) {
             val shape = heartRecipeSection.getStringList("shape")
             val ingredients = heartRecipeSection.getConfigurationSection("ingredients")
             
-            if (shape.isEmpty() || ingredients == null) {
-                plugin.logger.warning("Invalid heart recipe configuration, using default recipe")
+            if (shape.isEmpty() || ingredients == null || shape.size > 3) {
+                plugin.logger.warning("Invalid heart recipe configuration (shape must have 1-3 rows), using default recipe")
                 registerDefaultHeartRecipe(heartItem, heartKey)
                 return
+            }
+            
+            // Validate each row in the shape
+            for (row in shape) {
+                if (row.length > 3) {
+                    plugin.logger.warning("Invalid heart recipe configuration (each row must be 1-3 characters), using default recipe")
+                    registerDefaultHeartRecipe(heartItem, heartKey)
+                    return
+                }
             }
             
             val heartRecipe = ShapedRecipe(heartKey, heartItem).apply {
@@ -94,10 +103,19 @@ class CraftingRecipes(private val plugin: JavaPlugin) {
             val shape = revivalBeaconRecipeSection.getStringList("shape")
             val ingredients = revivalBeaconRecipeSection.getConfigurationSection("ingredients")
             
-            if (shape.isEmpty() || ingredients == null) {
-                plugin.logger.warning("Invalid revival beacon recipe configuration, using default recipe")
+            if (shape.isEmpty() || ingredients == null || shape.size > 3) {
+                plugin.logger.warning("Invalid revival beacon recipe configuration (shape must have 1-3 rows), using default recipe")
                 registerDefaultRevivalBeaconRecipe(revivalBeaconItem, revivalBeaconKey)
                 return
+            }
+            
+            // Validate each row in the shape
+            for (row in shape) {
+                if (row.length > 3) {
+                    plugin.logger.warning("Invalid revival beacon recipe configuration (each row must be 1-3 characters), using default recipe")
+                    registerDefaultRevivalBeaconRecipe(revivalBeaconItem, revivalBeaconKey)
+                    return
+                }
             }
             
             val revivalBeaconRecipe = ShapedRecipe(revivalBeaconKey, revivalBeaconItem).apply {

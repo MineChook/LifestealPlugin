@@ -2,11 +2,14 @@
 maxHealth: 40.0
 
 # Crafting recipe configurations
+# You can customize both heart and revival beacon recipes here.
+# Shape: 1-3 rows of 1-3 characters each, defining the crafting pattern
+# Ingredients: Maps each character in the shape to a Minecraft material name
 recipes:
   heart:
     shape:
-      - "DND"
-      - "NHN"
+      - "DND"  # D = Diamond Block, N = Netherite Ingot
+      - "NHN"  # H = Nether Star
       - "DND"
     ingredients:
       D: "DIAMOND_BLOCK"
@@ -14,8 +17,8 @@ recipes:
       H: "NETHER_STAR"
   revival_beacon:
     shape:
-      - "HNH"
-      - "NBN"
+      - "HNH"  # H = Heart item, N = Netherite Ingot
+      - "NBN"  # B = Beacon
       - "HNH"
     ingredients:
       H: "HEART"  # Special case - refers to the heart item
