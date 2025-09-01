@@ -15,5 +15,8 @@ commands:
     drain:
       description: Drain a heart
 
+libraries:
+    - "net.axay:kspigot:1.21.0"
+
 authors: [ ThatKid ]
 website: thatkid.github.io
