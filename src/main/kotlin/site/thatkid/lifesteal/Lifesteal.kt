@@ -8,6 +8,7 @@ import org.bukkit.entity.Player
 import site.thatkid.lifesteal.listeners.Listeners
 import site.thatkid.lifesteal.managers.Manager
 import site.thatkid.lifesteal.recipes.CraftingRecipes
+import java.io.File
 
 class Lifesteal : KSpigot() {
 
@@ -28,6 +29,8 @@ class Lifesteal : KSpigot() {
         craftingRecipes.registerRevivalBeaconRecipe()
         
         pluginConfig.addDefault("maxHealth", 40.0)
+
+        saveResource("config.yml", false)
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
