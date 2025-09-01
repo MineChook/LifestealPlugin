@@ -34,6 +34,9 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
             if (player.health > newMax) {
                 player.health = newMax
             }
+        } else {
+            player.sendMessage("You have reached the maximum health limit.")
+            player.inventory.addItem(Heart(plugin).createItem())
         }
     }
 
