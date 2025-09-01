@@ -1,5 +1,7 @@
 package site.thatkid.lifesteal.managers
 
+import org.bukkit.BanList
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.configuration.Configuration
@@ -8,8 +10,11 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import site.thatkid.lifesteal.items.Heart
 import java.util.Date
+import java.util.UUID
 
 class Manager(private val plugin: JavaPlugin, private val config: Configuration) {
+
+    private val heartLossBannedPlayers = mutableSetOf<String>()
 
     fun addHeart(player: Player) {
         val attribute = player.getAttribute(Attribute.MAX_HEALTH) ?: return
@@ -62,7 +67,38 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
         player.getAttribute(Attribute.MAX_HEALTH)?.baseValue = 6.0
         val oneMonthMillis = 30L * 24 * 60 * 60 * 1000
         val expires = Date(System.currentTimeMillis() + oneMonthMillis)
+        
+        heartLossBannedPlayers.add(player.name)
+        
         player.ban("You have been banned for losing all your hearts.", expires, null, true)
+    }
+
+    fun getBannedPlayersFromHeartLoss(): List<String> {
+        return heartLossBannedPlayers.toList()
+    }
+
+    fun revivePlayer(reviverPlayer: Player, playerName: String): Boolean {
+        if (!heartLossBannedPlayers.contains(playerName)) {
+            return false
+        }
+
+        try {
+            val offlinePlayer = Bukkit.getOfflinePlayer(playerName)
+            if (offlinePlayer.isBanned) {
+                plugin.server.dispatchCommand(plugin.server.consoleSender, "pardon $playerName")
+
+                val onlinePlayer = Bukkit.getPlayer(playerName)
+                onlinePlayer?.getAttribute(Attribute.MAX_HEALTH)?.baseValue = 6.0
+
+                heartLossBannedPlayers.remove(playerName)
+                
+                return true
+            }
+        } catch (e: Exception) {
+            plugin.logger.warning("Failed to revive player $playerName: ${e.message}")
+        }
+
+        return false
     }
 
 }
