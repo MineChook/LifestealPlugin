@@ -1,18 +1,11 @@
 package site.thatkid.lifesteal.managers
 
-import net.axay.kspigot.ipaddress.checkIP
-import net.axay.kspigot.ipaddress.ipAddressData
-import org.bukkit.BanList
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.configuration.Configuration
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import site.thatkid.lifesteal.items.Heart
-import java.util.Date
-import java.util.UUID
 
 class Manager(private val plugin: JavaPlugin, private val config: Configuration) {
 
@@ -67,8 +60,6 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
 
     private fun banPlayer(player: Player) {
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = 6.0
-        val oneMonthMillis = 30L * 24 * 60 * 60 * 1000
-        val expires = Date(System.currentTimeMillis() + oneMonthMillis)
         
         heartLossBannedPlayers.add(player.name)
 
@@ -80,7 +71,7 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
         return heartLossBannedPlayers.toList()
     }
 
-    fun revivePlayer(reviverPlayer: Player, playerName: String): Boolean {
+    fun revivePlayer(playerName: String): Boolean {
         if (!heartLossBannedPlayers.contains(playerName)) {
             return false
         }

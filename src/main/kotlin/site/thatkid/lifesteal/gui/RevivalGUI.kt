@@ -75,14 +75,14 @@ class RevivalGUI(private val plugin: JavaPlugin, private val manager: Manager) {
 
         if (clickedItem == null || clickedItem.type.isAir) return@listen
 
-        if (!clickedItem.equals(Material.PLAYER_HEAD)) return@listen
+        if (clickedItem.type != Material.PLAYER_HEAD) return@listen
 
         val meta = clickedItem.itemMeta as SkullMeta
         val bannedPlayers = manager.getBannedPlayersFromHeartLoss()
 
         for (i in bannedPlayers) {
             if (meta.playerProfile == Bukkit.getPlayer(i)) {
-                manager.revivePlayer(e.whoClicked as Player, i)
+                manager.revivePlayer(i)
             }
         }
     }
