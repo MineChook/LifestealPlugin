@@ -5,6 +5,7 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
+import site.thatkid.lifesteal.gui.Items
 import site.thatkid.lifesteal.listeners.Listeners
 import site.thatkid.lifesteal.managers.Manager
 import site.thatkid.lifesteal.recipes.CraftingRecipes
@@ -17,16 +18,20 @@ class Lifesteal : KSpigot() {
     lateinit var manager : Manager
     lateinit var listeners: Listeners
     lateinit var craftingRecipes: CraftingRecipes
+    lateinit var items: Items
 
     override fun startup() {
         pluginConfig = this.config
         manager = Manager(this, pluginConfig)
         listeners = Listeners(this, manager)
         craftingRecipes = CraftingRecipes(this)
+        items = Items(this)
         
         listeners.enableAll()
         craftingRecipes.registerHeartRecipe()
         craftingRecipes.registerRevivalBeaconRecipe()
+
+        manager.load()
         
         pluginConfig.addDefault("maxHealth", 40.0)
 
@@ -60,6 +65,7 @@ class Lifesteal : KSpigot() {
     private fun reload() {
         listeners.disableAll()
         craftingRecipes.unregisterRecipes()
+        manager.save()
 
         pluginConfig = this.config
         manager = Manager(this, pluginConfig)
@@ -69,10 +75,13 @@ class Lifesteal : KSpigot() {
         listeners.enableAll()
         craftingRecipes.registerHeartRecipe()
         craftingRecipes.registerRevivalBeaconRecipe()
+
+        manager.load()
     }
 
     override fun shutdown() {
         listeners.disableAll()
         craftingRecipes.unregisterRecipes()
+        manager.save()
     }
 }

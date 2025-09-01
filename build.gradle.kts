@@ -41,9 +41,6 @@ tasks {
     shadowJar {
         archiveClassifier.set("") // replaces default "-all" so Paper loads it normally
         mergeServiceFiles()       // merge META-INF/services if needed
-
-        // Relocate WebSocket classes to avoid conflicts with other plugins
-
     }
 
     build {

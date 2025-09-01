@@ -1,15 +1,24 @@
 package site.thatkid.lifesteal.managers
 
+import com.google.gson.GsonBuilder
 import org.bukkit.Bukkit
 import org.bukkit.attribute.Attribute
 import org.bukkit.configuration.Configuration
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import site.thatkid.lifesteal.items.Heart
+import java.util.Date
 
 class Manager(private val plugin: JavaPlugin, private val config: Configuration) {
 
-    private val heartLossBannedPlayers = mutableSetOf<String>()
+
+    data class SaveData(
+        var heartLossBannedPlayers: Set<String> = mutableSetOf(),
+    )
+
+    private val gson = GsonBuilder().setPrettyPrinting().create()
+
+    private var heartLossBannedPlayers = mutableSetOf<String>()
 
     fun addHeart(player: Player) {
         val attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return
@@ -33,7 +42,7 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
         }
 
         if (currentMax > 2.0) {
-            val newMax = (currentMax - 2.0).coerceAtLeast(2.0)
+            val newMax = (currentMax - 1.0).coerceAtLeast(2.0)
             attribute.baseValue = newMax
             if (player.health > newMax) {
                 player.health = newMax
@@ -63,8 +72,8 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
         
         heartLossBannedPlayers.add(player.name)
 
+
         player.kick()
-        plugin.server.bannedPlayers.add(player)
     }
 
     fun getBannedPlayersFromHeartLoss(): List<String> {
@@ -95,4 +104,29 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
         return false
     }
 
+    fun save() {
+        val data = SaveData(
+            heartLossBannedPlayers = heartLossBannedPlayers.toSet()
+        )
+        val json = gson.toJson(data)
+        val file = plugin.dataFolder.resolve("save_data.json")
+        try {
+            file.writeText(json)
+        } catch (e: Exception) {
+            plugin.logger.warning("Failed to save data: ${e.message}")
+        }
+    }
+
+    fun load() {
+        if (!plugin.dataFolder.exists())  {
+            plugin.dataFolder.mkdirs()
+        }
+        try {
+            val json = plugin.dataFolder.resolve("save_data.json").readText()
+            val data = gson.fromJson(json, SaveData::class.java)
+            heartLossBannedPlayers = data.heartLossBannedPlayers.toSet() as MutableSet<String>
+        } catch (e: Exception) {
+            plugin.logger.warning("Failed to load data: ${e.message}")
+        }
+    }
 }

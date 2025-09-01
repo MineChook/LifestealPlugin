@@ -17,15 +17,17 @@ import site.thatkid.lifesteal.managers.Manager
 
 class RevivalGUI(private val plugin: JavaPlugin, private val manager: Manager) {
 
-    fun createRevivalInventory(player: Player): Inventory {
+    fun createRevivalInventory(player: Player, check: Boolean = false): Inventory {
         val bannedPlayers = manager.getBannedPlayersFromHeartLoss()
 
         // Create a simple GUI using KSpigot
         val gui = Bukkit.createInventory(player, 27, Component.text("Revival Beacon"))
 
-        if (bannedPlayers.isEmpty()) {
-            player.sendMessage("§eNo players are currently banned from heart loss!")
-            return gui
+        if (!check) {
+            if (bannedPlayers.isEmpty()) {
+                player.sendMessage("§eNo players are currently banned from heart loss!")
+                return gui
+            }
         }
 
         for (i in bannedPlayers) {
@@ -68,7 +70,7 @@ class RevivalGUI(private val plugin: JavaPlugin, private val manager: Manager) {
     }
 
     val inventoryClick = listen<InventoryClickEvent> { e ->
-        if (e.inventory != createRevivalInventory(e.whoClicked as Player)) return@listen
+        if (e.inventory != createRevivalInventory(e.whoClicked as Player, true)) return@listen
         e.isCancelled = true
 
         val clickedItem = e.currentItem
