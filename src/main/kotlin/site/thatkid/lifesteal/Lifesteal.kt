@@ -32,7 +32,21 @@ class Lifesteal : KSpigot() {
 
         manager.load()
         
+        // Set configuration defaults
         pluginConfig.addDefault("maxHealth", 40.0)
+        
+        // Add recipe defaults
+        pluginConfig.addDefault("recipes.heart.shape", listOf("DND", "NHN", "DND"))
+        pluginConfig.addDefault("recipes.heart.ingredients.D", "DIAMOND_BLOCK")
+        pluginConfig.addDefault("recipes.heart.ingredients.N", "NETHERITE_INGOT")
+        pluginConfig.addDefault("recipes.heart.ingredients.H", "NETHER_STAR")
+        
+        pluginConfig.addDefault("recipes.revival_beacon.shape", listOf("HNH", "NBN", "HNH"))
+        pluginConfig.addDefault("recipes.revival_beacon.ingredients.H", "HEART")
+        pluginConfig.addDefault("recipes.revival_beacon.ingredients.N", "NETHERITE_INGOT")
+        pluginConfig.addDefault("recipes.revival_beacon.ingredients.B", "BEACON")
+        
+        pluginConfig.options().copyDefaults(true)
 
         saveResource("config.yml", false)
     }
@@ -66,6 +80,8 @@ class Lifesteal : KSpigot() {
         craftingRecipes.unregisterRecipes()
         manager.save()
 
+        // Reload configuration from file
+        reloadConfig()
         pluginConfig = this.config
         manager = Manager(this, pluginConfig)
         listeners = Listeners(this, manager)

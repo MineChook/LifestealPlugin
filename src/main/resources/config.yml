@@ -1,2 +1,23 @@
 
 maxHealth: 40.0
+
+# Crafting recipe configurations
+recipes:
+  heart:
+    shape:
+      - "DND"
+      - "NHN"
+      - "DND"
+    ingredients:
+      D: "DIAMOND_BLOCK"
+      N: "NETHERITE_INGOT"
+      H: "NETHER_STAR"
+  revival_beacon:
+    shape:
+      - "HNH"
+      - "NBN"
+      - "HNH"
+    ingredients:
+      H: "HEART"  # Special case - refers to the heart item
+      N: "NETHERITE_INGOT"
+      B: "BEACON"
