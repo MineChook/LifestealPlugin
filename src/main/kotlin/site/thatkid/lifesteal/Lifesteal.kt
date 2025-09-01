@@ -18,7 +18,7 @@ class Lifesteal : KSpigot() {
     lateinit var craftingRecipes: CraftingRecipes
 
     override fun startup() {
-        pluginConfig = this.getConfig()
+        pluginConfig = this.config
         manager = Manager(this, pluginConfig)
         listeners = Listeners(this, manager)
         craftingRecipes = CraftingRecipes(this)
@@ -30,10 +30,10 @@ class Lifesteal : KSpigot() {
         pluginConfig.addDefault("maxHealth", 40.0)
     }
 
-    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String?>?): Boolean {
+    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
         if (command.name == "lifesteal") {
             if (sender.hasPermission("lifesteal")) {
-                if (args == null || args.isEmpty()) {
+                if (args.isEmpty()) {
                     sender.sendMessage("Lifesteal v1.0 by thatkid.site")
                     return true
                 }
@@ -58,7 +58,7 @@ class Lifesteal : KSpigot() {
         listeners.disableAll()
         craftingRecipes.unregisterRecipes()
 
-        pluginConfig = this.getConfig()
+        pluginConfig = this.config
         manager = Manager(this, pluginConfig)
         listeners = Listeners(this, manager)
         craftingRecipes = CraftingRecipes(this)

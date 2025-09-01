@@ -1,5 +1,7 @@
 package site.thatkid.lifesteal.managers
 
+import net.axay.kspigot.ipaddress.checkIP
+import net.axay.kspigot.ipaddress.ipAddressData
 import org.bukkit.BanList
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -17,7 +19,7 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
     private val heartLossBannedPlayers = mutableSetOf<String>()
 
     fun addHeart(player: Player) {
-        val attribute = player.getAttribute(Attribute.MAX_HEALTH) ?: return
+        val attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return
         val maxAllowed = config.getDouble("maxHealth", 40.0)
         val currentMax = attribute.value
         if (currentMax < maxAllowed) {
@@ -30,7 +32,7 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
     }
 
     fun removeHeart(player: Player) {
-        val attribute = player.getAttribute(Attribute.MAX_HEALTH) ?: return
+        val attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return
         val currentMax = attribute.value
 
         if (currentMax <= 2.0) {
@@ -47,7 +49,7 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
     }
 
     fun drainHeart(player: Player) {
-        val attribute = player.getAttribute(Attribute.MAX_HEALTH) ?: return
+        val attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH) ?: return
         val currentMax = attribute.value
 
         if (currentMax <= 2.0) {
@@ -64,13 +66,14 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
     }
 
     private fun banPlayer(player: Player) {
-        player.getAttribute(Attribute.MAX_HEALTH)?.baseValue = 6.0
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = 6.0
         val oneMonthMillis = 30L * 24 * 60 * 60 * 1000
         val expires = Date(System.currentTimeMillis() + oneMonthMillis)
         
         heartLossBannedPlayers.add(player.name)
-        
-        player.ban("You have been banned for losing all your hearts.", expires, null, true)
+
+        player.kick()
+        plugin.server.bannedPlayers.add(player)
     }
 
     fun getBannedPlayersFromHeartLoss(): List<String> {
@@ -88,7 +91,7 @@ class Manager(private val plugin: JavaPlugin, private val config: Configuration)
                 plugin.server.dispatchCommand(plugin.server.consoleSender, "pardon $playerName")
 
                 val onlinePlayer = Bukkit.getPlayer(playerName)
-                onlinePlayer?.getAttribute(Attribute.MAX_HEALTH)?.baseValue = 6.0
+                onlinePlayer?.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = 6.0
 
                 heartLossBannedPlayers.remove(playerName)
                 

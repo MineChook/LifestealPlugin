@@ -21,7 +21,7 @@ class RevivalGUI(private val plugin: JavaPlugin, private val manager: Manager) {
         val bannedPlayers = manager.getBannedPlayersFromHeartLoss()
 
         // Create a simple GUI using KSpigot
-        val gui = Bukkit.createInventory(player, 27, "Revival Beacon")
+        val gui = Bukkit.createInventory(player, 27, Component.text("Revival Beacon"))
 
         if (bannedPlayers.isEmpty()) {
             player.sendMessage("§eNo players are currently banned from heart loss!")
@@ -48,11 +48,11 @@ class RevivalGUI(private val plugin: JavaPlugin, private val manager: Manager) {
         val head = ItemStack(Material.PLAYER_HEAD)
         val meta = head.itemMeta!!
         
-        meta.setDisplayName("§e$playerName")
-        meta.lore = listOf(
-            "§7Click to revive this player",
-            "§c§lWarning: This will consume the Revival Beacon!"
-        )
+        meta.displayName(Component.text("§e$playerName"))
+        meta.lore(listOf(
+            Component.text("§7Click to revive this player"),
+            Component.text("§c§lWarning: This will consume the Revival Beacon!")
+        ))
         
         // Try to set the skull owner
         try {
@@ -68,19 +68,22 @@ class RevivalGUI(private val plugin: JavaPlugin, private val manager: Manager) {
     }
 
     val inventoryClick = listen<InventoryClickEvent> { e ->
-        if (!e.getInventory().equals(createRevivalInventory(e.whoClicked as Player))) return@listen
-        e.setCancelled(true)
+        if (e.inventory != createRevivalInventory(e.whoClicked as Player)) return@listen
+        e.isCancelled = true
 
-        val clickedItem = e.getCurrentItem()
+        val clickedItem = e.currentItem
 
-
-        // verify current item is not null
-        if (clickedItem == null || clickedItem.getType().isAir()) return@listen
+        if (clickedItem == null || clickedItem.type.isAir) return@listen
 
         if (!clickedItem.equals(Material.PLAYER_HEAD)) return@listen
 
         val meta = clickedItem.itemMeta as SkullMeta
+        val bannedPlayers = manager.getBannedPlayersFromHeartLoss()
 
-
+        for (i in bannedPlayers) {
+            if (meta.playerProfile == Bukkit.getPlayer(i)) {
+                manager.revivePlayer(e.whoClicked as Player, i)
+            }
+        }
     }
 }

@@ -33,9 +33,9 @@ class CraftingRecipes(private val plugin: JavaPlugin) {
         val revivalBeaconKey = NamespacedKey(plugin, "revival_beacon_recipe")
         
         val revivalBeaconRecipe = ShapedRecipe(revivalBeaconKey, revivalBeaconItem).apply {
-            shape("NDN", "DBD", "NDN")
+            shape("HNH", "NBN", "HNH")
+            setIngredient('H', Heart(plugin).createItem())
             setIngredient('N', Material.NETHERITE_INGOT)
-            setIngredient('D', Material.DIAMOND_BLOCK)
             setIngredient('B', Material.BEACON)
         }
         
