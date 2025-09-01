@@ -1,5 +1,6 @@
 package site.thatkid.lifesteal.items
 
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
@@ -14,12 +15,12 @@ class RevivalBeaconItem(private val plugin: JavaPlugin) {
         val item = ItemStack(Material.BEACON)
         val itemMeta = item.itemMeta!!
 
-        itemMeta.setDisplayName("§6Revival Beacon")
-        itemMeta.lore = listOf(
-            "§7Right-click to open the revival menu",
-            "§7and revive players banned from heart loss",
-            "§c§lConsumes the item on use"
-        )
+        itemMeta.displayName(Component.text("§6Revival Beacon"))
+        itemMeta.lore(listOf(
+            Component.text("§7Right-click to open the revival menu"),
+            Component.text("§7and revive players banned from heart loss"),
+            Component.text("§c§lConsumes the item on use")
+        ))
         itemMeta.persistentDataContainer.set(key, PersistentDataType.BYTE, 1)
 
         item.itemMeta = itemMeta

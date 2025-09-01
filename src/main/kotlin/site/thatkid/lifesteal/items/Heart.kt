@@ -1,5 +1,6 @@
 package site.thatkid.lifesteal.items
 
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
@@ -14,7 +15,7 @@ class Heart(private val plugin: JavaPlugin) {
         val item = ItemStack(Material.RED_DYE)
         val itemMeta = item.itemMeta!!
 
-        itemMeta.setDisplayName("§cHeart")
+        itemMeta.displayName(Component.text("§cHeart"))
         itemMeta.persistentDataContainer.set(key, PersistentDataType.BYTE, 1)
 
         item.itemMeta = itemMeta
