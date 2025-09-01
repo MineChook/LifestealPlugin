@@ -17,15 +17,17 @@ import site.thatkid.lifesteal.managers.Manager
 
 class RevivalGUI(private val plugin: JavaPlugin, private val manager: Manager) {
 
-    fun createRevivalInventory(player: Player): Inventory {
+    fun createRevivalInventory(player: Player, check: Boolean = false): Inventory {
         val bannedPlayers = manager.getBannedPlayersFromHeartLoss()
 
         // Create a simple GUI using KSpigot
         val gui = Bukkit.createInventory(player, 27, Component.text("Revival Beacon"))
 
-        if (bannedPlayers.isEmpty()) {
-            player.sendMessage("§eNo players are currently banned from heart loss!")
-            return gui
+        if (!check) {
+            if (bannedPlayers.isEmpty()) {
+                player.sendMessage("§eNo players are currently banned from heart loss!")
+                return gui
+            }
         }
 
         for (i in bannedPlayers) {
@@ -68,21 +70,21 @@ class RevivalGUI(private val plugin: JavaPlugin, private val manager: Manager) {
     }
 
     val inventoryClick = listen<InventoryClickEvent> { e ->
-        if (e.inventory != createRevivalInventory(e.whoClicked as Player)) return@listen
+        if (e.inventory != createRevivalInventory(e.whoClicked as Player, true)) return@listen
         e.isCancelled = true
 
         val clickedItem = e.currentItem
 
         if (clickedItem == null || clickedItem.type.isAir) return@listen
 
-        if (!clickedItem.equals(Material.PLAYER_HEAD)) return@listen
+        if (clickedItem.type != Material.PLAYER_HEAD) return@listen
 
         val meta = clickedItem.itemMeta as SkullMeta
         val bannedPlayers = manager.getBannedPlayersFromHeartLoss()
 
         for (i in bannedPlayers) {
             if (meta.playerProfile == Bukkit.getPlayer(i)) {
-                manager.revivePlayer(e.whoClicked as Player, i)
+                manager.revivePlayer(i)
             }
         }
     }

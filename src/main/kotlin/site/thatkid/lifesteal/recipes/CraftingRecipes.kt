@@ -16,7 +16,7 @@ class CraftingRecipes(private val plugin: JavaPlugin) {
         
         val heartRecipe = ShapedRecipe(heartKey, heartItem).apply {
             shape("DND", "NHN", "DND")
-            setIngredient('D', Material.DIAMOND)
+            setIngredient('D', Material.DIAMOND_BLOCK)
             setIngredient('N', Material.NETHERITE_INGOT)
             setIngredient('H', Material.NETHER_STAR)
         }
